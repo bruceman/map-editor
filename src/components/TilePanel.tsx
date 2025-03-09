@@ -12,6 +12,7 @@ import {
 import { Delete, Add, SelectAll } from '@mui/icons-material';
 import { useEditorStore } from '../store/editorStore';
 import { useState, useRef, useEffect } from 'react';
+import { useLanguageStore } from '../store/languageStore';
 
 interface TilesetDialogProps {
   open: boolean;
@@ -21,6 +22,7 @@ interface TilesetDialogProps {
 }
 
 const TilesetDialog = ({ open, onClose, imageUrl, onConfirm }: TilesetDialogProps) => {
+  const { t } = useLanguageStore();
   const [tileWidth, setTileWidth] = useState(64);
   const [tileHeight, setTileHeight] = useState(64);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -186,18 +188,18 @@ const TilesetDialog = ({ open, onClose, imageUrl, onConfirm }: TilesetDialogProp
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
-      <DialogTitle>添加TILESET</DialogTitle>
+      <DialogTitle>{t('addTileset')}</DialogTitle>
       <DialogContent>
         <Box sx={{ mb: 2, display: 'flex', gap: 2, alignItems: 'center', paddingTop: '6px' }}>
           <TextField
-            label="Tile宽度"
+            label={t('tileWidth')}
             type="number"
             size="small"
             value={tileWidth}
             onChange={(e) => setTileWidth(Number(e.target.value))}
           />
           <TextField
-            label="Tile高度"
+            label={t('tileHeight')}
             type="number"
             size="small"
             value={tileHeight}
@@ -209,7 +211,7 @@ const TilesetDialog = ({ open, onClose, imageUrl, onConfirm }: TilesetDialogProp
             startIcon={<SelectAll />}
             onClick={handleSelectAll}
           >
-            {selectedTiles.every(row => row.every(cell => cell)) ? '取消全选' : '全选'}
+            {selectedTiles.every(row => row.every(cell => cell)) ? t('cancelSelectAll') : t('selectAll')}
           </Button>
         </Box>
         <Box
@@ -228,9 +230,9 @@ const TilesetDialog = ({ open, onClose, imageUrl, onConfirm }: TilesetDialogProp
         </Box>
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose}>取消</Button>
+        <Button onClick={onClose}>{t('cancel')}</Button>
         <Button onClick={handleConfirm} variant="contained">
-          确认
+          {t('confirm')}
         </Button>
       </DialogActions>
     </Dialog>
@@ -248,6 +250,7 @@ const TilePanel = () => {
     tileSize,
     setTileSize,
   } = useEditorStore();
+  const { t } = useLanguageStore();
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -257,7 +260,7 @@ const TilePanel = () => {
   const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
     if (!files || files.length === 0) {
-      console.error('没有选择文件');
+      console.error(t('noFileSelected'));
       return;
     }
 
@@ -265,30 +268,30 @@ const TilePanel = () => {
     try {
       const file = files[0];
       if (!file || !(file instanceof File)) {
-        throw new Error('无效的文件对象');
+        throw new Error(t('invalidFile'));
       }
 
       if (!file.type.startsWith('image/')) {
-        throw new Error('请选择有效的图片文件');
+        throw new Error(t('selectImageFile'));
       }
 
       const reader = new FileReader();
       reader.onload = (e) => {
         if (!e.target?.result || typeof e.target.result !== 'string') {
-          throw new Error('文件读取失败');
+          throw new Error(t('loadError'));
         }
         setCurrentImageUrl(e.target.result);
         setTilesetDialogOpen(true);
       };
 
       reader.onerror = () => {
-        throw new Error('文件读取失败：' + reader.error?.message);
+        throw new Error(t('fileReadError') + ': ' + reader.error?.message);
       };
 
       reader.readAsDataURL(file);
     } catch (error) {
       console.error('Error loading tileset:', error);
-      alert(error instanceof Error ? error.message : '加载 tileset 时发生错误');
+      alert(error instanceof Error ? error.message : t('loadingTilesetError'));
     } finally {
       setIsLoading(false);
     }
@@ -320,7 +323,7 @@ const TilePanel = () => {
       flexDirection: 'column'
     }}>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-        <Typography variant="h6">Map Editor</Typography>
+        <Typography variant="h6">{t('mapEditor')}</Typography>
         <Button
           variant="contained"
           size="small"
@@ -328,7 +331,7 @@ const TilePanel = () => {
           onClick={() => fileInputRef.current?.click()}
           disabled={isLoading}
         >
-          添加TILESET
+          {t('addTileset')}
         </Button>
         <input
           type="file"
@@ -340,7 +343,7 @@ const TilePanel = () => {
       </Box>
 
       <TextField
-        label="Tile大小"
+        label={t('tileSize')}
         type="number"
         size="small"
         value={tileSize}
@@ -438,7 +441,7 @@ const TilePanel = () => {
         borderColor: 'divider'
       }}>
         <Typography variant="body2" color="text.secondary">
-          总数量: {tiles.length} 个瓦片
+          {t('totalTiles').replace('{count}', tiles.length.toString())}
         </Typography>
       </Box>
 

@@ -1,6 +1,8 @@
 # Map Editor
 
-<img src="public/map-editor.svg" width="80" height="80" alt="Tiles Editor Logo" />
+[English](README-EN.md) | 简体中文
+
+<img src="public/map-editor.svg" width="80" height="80" alt="Map Editor Logo" />
 
 一个简单而强大的瓦片(Tiles)地图编辑器，用于创建和编辑 2D 游戏地图。
 
@@ -32,6 +34,11 @@
   - 导出为 PNG 图片
   - 导出为 JSON 格式
   - 导入 JSON 继续编辑
+
+- 🌈 界面定制
+  - 深色/浅色主题切换
+  - 中文/英文语言切换
+  - 响应式布局
 
 ## 本地运行
 
@@ -71,6 +78,7 @@ http://localhost:5173
 - Konva.js
 - Zustand
 - Vite
+- i18n (多语言支持)
 
 ## 开发
 

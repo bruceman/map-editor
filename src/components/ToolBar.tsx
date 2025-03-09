@@ -6,6 +6,9 @@ import {
   ToggleButton,
   ToggleButtonGroup,
   Tooltip,
+  IconButton,
+  Menu,
+  MenuItem,
 } from '@mui/material';
 import {
   GridOn,
@@ -23,9 +26,12 @@ import {
   DarkMode,
   LightMode,
   AutoFixNormal,
+  Translate,
 } from '@mui/icons-material';
 import { useEditorStore } from '../store/editorStore';
 import { useThemeStore } from '../App';
+import { useLanguageStore } from '../store/languageStore';
+import { useState } from 'react';
 
 const ToolBar = () => {
   const {
@@ -51,6 +57,22 @@ const ToolBar = () => {
   } = useEditorStore();
 
   const { isDarkMode, toggleTheme } = useThemeStore();
+  const { t, currentLanguage, setLanguage } = useLanguageStore();
+
+  const [languageMenuAnchor, setLanguageMenuAnchor] = useState<null | HTMLElement>(null);
+
+  const handleLanguageClick = (event: React.MouseEvent<HTMLElement>) => {
+    setLanguageMenuAnchor(event.currentTarget);
+  };
+
+  const handleLanguageClose = () => {
+    setLanguageMenuAnchor(null);
+  };
+
+  const handleLanguageSelect = (language: 'zh' | 'en') => {
+    setLanguage(language);
+    handleLanguageClose();
+  };
 
   const handleExportImage = async () => {
     if (!stageRef) return;
@@ -182,12 +204,12 @@ const ToolBar = () => {
       }
     }}>
       <ButtonGroup variant="outlined" size="small">
-        <Tooltip title="撤销">
+        <Tooltip title={t('undo')}>
           <Button onClick={undo}>
             <Undo fontSize="small" />
           </Button>
         </Tooltip>
-        <Tooltip title="重做">
+        <Tooltip title={t('redo')}>
           <Button onClick={redo}>
             <Redo fontSize="small" />
           </Button>
@@ -195,17 +217,17 @@ const ToolBar = () => {
       </ButtonGroup>
 
       <ButtonGroup variant="outlined" size="small">
-        <Tooltip title="放大">
+        <Tooltip title={t('zoomIn')}>
           <Button onClick={() => setScale(scale * 1.2)}>
             <ZoomIn fontSize="small" />
           </Button>
         </Tooltip>
-        <Tooltip title="缩小">
+        <Tooltip title={t('zoomOut')}>
           <Button onClick={() => setScale(scale / 1.2)}>
             <ZoomOut fontSize="small" />
           </Button>
         </Tooltip>
-        <Tooltip title="默认大小">
+        <Tooltip title={t('defaultSize')}>
           <Button onClick={() => setScale(1)}>
             <span style={{ fontSize: '12px' }}>1:1</span>
           </Button>
@@ -213,7 +235,7 @@ const ToolBar = () => {
       </ButtonGroup>
 
       <TextField
-        label="宽度"
+        label={t('width')}
         type="number"
         size="small"
         value={mapWidth}
@@ -223,7 +245,7 @@ const ToolBar = () => {
       />
 
       <TextField
-        label="高度"
+        label={t('height')}
         type="number"
         size="small"
         value={mapHeight}
@@ -248,17 +270,17 @@ const ToolBar = () => {
         onChange={(_, value) => value && setGridStyle(value)}
         size="small"
       >
-        <ToggleButton value="solid" sx={{ padding: '4px 8px' }}>实线</ToggleButton>
-        <ToggleButton value="dashed" sx={{ padding: '4px 8px' }}>虚线</ToggleButton>
+        <ToggleButton value="solid" sx={{ padding: '4px 8px' }}>{t('solidLine')}</ToggleButton>
+        <ToggleButton value="dashed" sx={{ padding: '4px 8px' }}>{t('dashedLine')}</ToggleButton>
       </ToggleButtonGroup>
 
       <ButtonGroup variant="outlined" size="small">
-        <Tooltip title="导出JSON">
+        <Tooltip title={t('exportJSON')}>
           <Button onClick={handleExportJson}>
             <Save fontSize="small" />
           </Button>
         </Tooltip>
-        <Tooltip title="导入JSON">
+        <Tooltip title={t('importJSON')}>
           <Button component="label">
             <Upload fontSize="small" />
             <input
@@ -269,7 +291,7 @@ const ToolBar = () => {
             />
           </Button>
         </Tooltip>
-        <Tooltip title="导出图片">
+        <Tooltip title={t('exportImage')}>
           <Button onClick={handleExportImage}>
             <ImageIcon fontSize="small" />
           </Button>
@@ -277,7 +299,7 @@ const ToolBar = () => {
       </ButtonGroup>
 
       <ButtonGroup variant="outlined" size="small">
-        <Tooltip title="填充地图">
+        <Tooltip title={t('fillMap')}>
           <span>
             <Button
               onClick={handleFillMap}
@@ -288,7 +310,7 @@ const ToolBar = () => {
           </span>
         </Tooltip>
 
-        <Tooltip title="随机分布">
+        <Tooltip title={t('randomDistribute')}>
           <span>
             <Button
               onClick={handleRandomDistribute}
@@ -299,7 +321,7 @@ const ToolBar = () => {
           </span>
         </Tooltip>
 
-        <Tooltip title={isErasing ? "取消橡皮擦" : "橡皮擦"}>
+        <Tooltip title={isErasing ? t('cancelEraser') : t('eraser')}>
           <span>
             <Button
               onClick={toggleErasing}
@@ -315,7 +337,7 @@ const ToolBar = () => {
           </span>
         </Tooltip>
 
-        <Tooltip title="清空图层">
+        <Tooltip title={t('clearLayer')}>
           <span>
             <Button
               onClick={() => currentLayer && clearLayerTiles(currentLayer)}
@@ -327,7 +349,7 @@ const ToolBar = () => {
         </Tooltip>
       </ButtonGroup>
 
-      <Tooltip title={isDarkMode ? "切换亮色主题" : "切换暗色主题"}>
+      <Tooltip title={isDarkMode ? t('toggleLightMode') : t('toggleDarkMode')}>
         <ToggleButton
           value="darkMode"
           selected={isDarkMode}
@@ -338,6 +360,35 @@ const ToolBar = () => {
           {isDarkMode ? <DarkMode fontSize="small" /> : <LightMode fontSize="small" />}
         </ToggleButton>
       </Tooltip>
+
+      <Tooltip title={t('language')}>
+        <IconButton
+          size="small"
+          onClick={handleLanguageClick}
+          sx={{ padding: '4px' }}
+        >
+          <Translate fontSize="small" />
+        </IconButton>
+      </Tooltip>
+
+      <Menu
+        anchorEl={languageMenuAnchor}
+        open={Boolean(languageMenuAnchor)}
+        onClose={handleLanguageClose}
+      >
+        <MenuItem
+          onClick={() => handleLanguageSelect('zh')}
+          selected={currentLanguage === 'zh'}
+        >
+          中文
+        </MenuItem>
+        <MenuItem
+          onClick={() => handleLanguageSelect('en')}
+          selected={currentLanguage === 'en'}
+        >
+          English
+        </MenuItem>
+      </Menu>
     </Box>
   );
 };

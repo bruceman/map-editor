@@ -17,6 +17,7 @@ import {
   VisibilityOff as VisibilityOffIcon,
 } from '@mui/icons-material';
 import { useEditorStore } from '../store/editorStore';
+import { useLanguageStore } from '../store/languageStore';
 
 const LayerPanel = () => {
   const {
@@ -28,6 +29,8 @@ const LayerPanel = () => {
     moveLayer,
     toggleLayerVisibility,
   } = useEditorStore();
+
+  const { t } = useLanguageStore();
 
   // 获取最大的图层编号
   const getNextLayerNumber = () => {
@@ -47,8 +50,8 @@ const LayerPanel = () => {
   return (
     <Paper sx={{ p: 2, height: '100%', boxSizing: 'border-box', display: 'flex', flexDirection: 'column' }}>
       <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-        <Typography variant="h6" sx={{ flex: 1 }}>图层</Typography>
-        <Tooltip title="添加图层">
+        <Typography variant="h6" sx={{ flex: 1 }}>{t('layers')}</Typography>
+        <Tooltip title={t('addLayer')}>
           <IconButton onClick={handleAddLayer} size="small">
             <AddIcon />
           </IconButton>
@@ -81,7 +84,7 @@ const LayerPanel = () => {
             />
             
             <Box sx={{ display: 'flex', gap: 0.5 }}>
-              <Tooltip title={layer.visible ? "隐藏图层" : "显示图层"}>
+              <Tooltip title={layer.visible ? t('hideLayer') : t('showLayer')}>
                 <IconButton
                   size="small"
                   onClick={(e) => {
@@ -93,7 +96,7 @@ const LayerPanel = () => {
                 </IconButton>
               </Tooltip>
 
-              <Tooltip title="上移图层">
+              <Tooltip title={t('moveLayerUp')}>
                 <span>
                   <IconButton
                     size="small"
@@ -108,7 +111,7 @@ const LayerPanel = () => {
                 </span>
               </Tooltip>
 
-              <Tooltip title="下移图层">
+              <Tooltip title={t('moveLayerDown')}>
                 <span>
                   <IconButton
                     size="small"
@@ -123,7 +126,7 @@ const LayerPanel = () => {
                 </span>
               </Tooltip>
 
-              <Tooltip title="删除图层">
+              <Tooltip title={t('deleteLayer')}>
                 <span>
                   <IconButton
                     size="small"
