@@ -6,7 +6,7 @@ English | [简体中文](README.md)
 
 A simple yet powerful tile map editor for creating and editing 2D game maps.
 
-<img src="public/screenshot-1.png" width="800" height="600" alt="Sceeenshot 1" />
+<img src="public/screenshot-2.png" width="800" height="600" alt="Sceeenshot 2" />
 
 
 ## Features
